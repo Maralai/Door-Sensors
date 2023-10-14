@@ -69,4 +69,4 @@ Feel free to fork this project, submit PRs and report issues. For major changes,
 
 ## License
 
-This project is licensed under [MIT](https://choosealicense.com/licenses/mit/).
+This project is licensed under Apache License 2.0
