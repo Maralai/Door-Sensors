@@ -11,9 +11,7 @@ This application facilitates the integration of door sensors with Home Assistant
 ├── README.md                # Documentation file
 ├── mosquitto/               # Mosquitto related files and configurations
 │   ├── entrypoint.sh        # Script to setup and start the Mosquitto service
-│   ├── log/                 # Logs related to the Mosquitto service
 │   ├── config/              # Configuration files for Mosquitto
-│   └── data/                # Data files for Mosquitto
 ├── build/                   # Build related files
 │   ├── Dockerfile           # Dockerfile for the application
 │   └── requirements.txt     # Python dependencies

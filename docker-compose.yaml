@@ -1,5 +1,4 @@
 version: '3'
-
 services:
   worker:
     container_name: worker
@@ -10,23 +9,28 @@ services:
     volumes:
       - ./data:/app/data
       - ./worker:/app/worker
-    depends_on:
-      - mosquitto
     restart: always
+    networks:
+      - monitoring
 
-  mosquitto:
-    container_name: mosquitto
+  mqtt:
+    container_name: mqtt
+    restart: always
     image: eclipse-mosquitto:latest
-    env_file:
-      - .env
+    env_file: .env
     ports:
       - "1883:1883"
+      - "9001:9001" #Websockets
     volumes:
-      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:rw
-      - ./mosquitto/data:/mosquitto/data:rw
-      - ./mosquitto/log:/mosquitto/log:rw
       - ./mosquitto/entrypoint.sh:/entrypoint.sh:ro
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/config/passwords.txt:/mosquitto/config/passwords.txt
+      - mosquitto_data:/mosquitto/data:rw
+      - mosquitto_log:/mosquitto/log:rw
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
-    restart: always
+    networks:
+      - monitoring
 
-
+volumes:
+  mosquitto_data:
+  mosquitto_log:
