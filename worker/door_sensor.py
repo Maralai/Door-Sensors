@@ -40,13 +40,12 @@ class DoorSensor:
     def setup_gpio(self):
         """Setup the GPIO pin for the door sensor."""
         try:
-            GPIO.setup(self.pin, GPIO.IN)  # With a pull-up resistor
+            GPIO.setup(self.pin, GPIO.IN)
             GPIO.add_event_detect(self.pin, GPIO.BOTH, callback=self.door_handler, bouncetime=300)            
-            # Initial position/state
             self.position = GPIO.input(self.pin)
             logging.info(f"GPIO pin {self.pin} setup successfully, initial state: {self.position}")
         except RuntimeError:
-            # If the pin is already registered, remove the event detection and re-register
+            logging.warning(f"GPIO pin {self.pin} already registered, removing event detection and re-registering")
             GPIO.remove_event_detect(self.pin)
             GPIO.add_event_detect(self.pin, GPIO.BOTH, callback=self.door_handler, bouncetime=300)
         except Exception as e:
@@ -54,7 +53,7 @@ class DoorSensor:
 
     def door_handler(self, channel):
         # Wait for the input to stabilize
-        time.sleep(.01)
+        time.sleep(.02)
         
         # Get the current state
         position_changed = GPIO.input(channel)
