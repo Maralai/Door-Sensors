@@ -10,8 +10,6 @@ services:
       - ./data:/app/data
       - ./worker:/app/worker
     restart: always
-    networks:
-      - monitoring
 
   mqtt:
     container_name: mqtt
@@ -28,8 +26,6 @@ services:
       - mosquitto_data:/mosquitto/data:rw
       - mosquitto_log:/mosquitto/log:rw
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
-    networks:
-      - monitoring
 
 volumes:
   mosquitto_data:
