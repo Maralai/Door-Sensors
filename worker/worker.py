@@ -23,7 +23,7 @@ with open("../data/doors.json", "r") as jsonfile:
 # Initialize MQTT client
 mqtt_client = mqtt.Client()
 mqtt_client.on_message = on_message  # Set the callback function
-mqtt_client.connect("mosquitto", 1883, 60)  # Assuming the MQTT server is running on 'mosquitto' (from your docker-compose)
+mqtt_client.connect("mqtt", 1883, 60)  # Assuming the MQTT server is running on 'mqtt' (from your docker-compose)
 mqtt_client.subscribe("homeassistant/status")  # Subscribe to the topic
 
 # Initialize door sensors and register them to Home Assistant
