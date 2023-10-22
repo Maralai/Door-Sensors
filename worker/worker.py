@@ -4,7 +4,7 @@ from door_sensor import DoorSensor
 import Jetson.GPIO as GPIO
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s:%(asctime)s %(message)s', level=logging.DEBUG)
 
 def on_message(client, userdata, message):
     payload = message.payload.decode("utf-8")

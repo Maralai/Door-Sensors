@@ -3,7 +3,7 @@ import time
 import json
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s:%(asctime)s %(message)s', level=logging.DEBUG)
 
 # GPIO Setup
 GPIO.setmode(GPIO.BOARD)  # Setting GPIO mode

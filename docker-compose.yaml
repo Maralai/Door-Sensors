@@ -22,7 +22,6 @@ services:
     volumes:
       - ./mosquitto/entrypoint.sh:/entrypoint.sh:ro
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:z
-      - ./mosquitto/config/passwords.txt:/mosquitto/config/passwords.txt:z
       - mosquitto_data:/mosquitto/data:rw
       - mosquitto_log:/mosquitto/log:rw
     entrypoint: ["/bin/sh", "/entrypoint.sh"]

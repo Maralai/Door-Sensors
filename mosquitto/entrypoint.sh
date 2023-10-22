@@ -5,19 +5,54 @@ LOG_FILE="/mosquitto/log/mosquitto_entrypoint.log"
 
 # Logging function
 log() {
-    echo "$(date) - $1" | tee -a $LOG_FILE
+    echo "$(date +"%Y-%m-%d %I:%M:%S %p") [ENTRY]: $1" | tee -a $LOG_FILE
 }
 
 # Echo and log the script start
 echo "Starting Mosquitto entrypoint script..." | tee -a $LOG_FILE
 
+log "Check if passwords.txt file exists..."
+# Check if the passwords.txt file exists
+if [ ! -f /mosquitto/config/passwords.txt ]; then
+    log "passwords.txt file does not exist, creating..."
+    touch /mosquitto/config/passwords.txt || {
+        log "Failed to create passwords.txt"
+        exit 1
+    }
+else
+    log "passwords.txt file exists, removing..."
+    rm /mosquitto/config/passwords.txt || {
+        log "Failed to remove passwords.txt"
+        exit 1
+    }
+    log "recreating passwords.txt..."
+    touch /mosquitto/config/passwords.txt || {
+        log "Failed to create passwords.txt"
+        exit 1
+    }
+fi
+
 # Create the passwords.txt file
-log "Creating passwords.txt file..."
+log "Generating passwords.txt..."
 mosquitto_passwd -b /mosquitto/config/passwords.txt $MQTT_USERNAME $MQTT_PASSWORD 2>> $LOG_FILE || {
-    log "Failed to create passwords.txt"
+    log "Failed to generated passwords.txt"
     exit 1
 }
-log "Successfully created passwords.txt"
+log "Successfully generated passwords.txt"
+
+log "Modifying permissions of passwords.txt file..."
+chmod 0700 /mosquitto/config/passwords.txt || {
+    log "Failed to modify permissions of passwords.txt"
+    exit 1
+}
+log "Successfully modified permissions of passwords.txt file"
+
+log "Changing owner of passwords.txt..."
+chown mosquitto /mosquitto/config/passwords.txt || {
+    log "Failed to change owner of passwords.txt"
+    exit 1
+}
+log "Successfully changed owner of passwords.txt"
 
 # Copy the config file to a temporary location within the container
 cp /mosquitto/config/mosquitto.conf /tmp/mosquitto_temp.conf || {
@@ -41,7 +76,7 @@ else
 fi
 
 # Run Mosquitto using the modified config file and log the output
-mosquitto -c /tmp/mosquitto_temp.conf -v >> $LOG_FILE 2>&1 || {
+mosquitto -c /tmp/mosquitto_temp.conf -v 2>&1 | tee -a $LOG_FILE || {
     log "Failed to start Mosquitto"
     exit 1
 }
