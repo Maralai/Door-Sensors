@@ -1,3 +1,4 @@
+import os
 import paho.mqtt.client as mqtt
 import json
 from door_sensor import DoorSensor
@@ -23,6 +24,14 @@ with open("../data/doors.json", "r") as jsonfile:
 # Initialize MQTT client
 mqtt_client = mqtt.Client()
 mqtt_client.on_message = on_message  # Set the callback function
+
+# Retrieve username and password from environment variables
+mqtt_username = os.environ['MQTT_USERNAME']
+mqtt_password = os.environ['MQTT_PASSWORD']
+
+# Set the username and password for the MQTT client
+mqtt_client.username_pw_set(mqtt_username, mqtt_password)
+
 mqtt_client.connect("mqtt", 1883, 60)  # Assuming the MQTT server is running on 'mqtt' (from your docker-compose)
 mqtt_client.subscribe("homeassistant/status")  # Subscribe to the topic
 

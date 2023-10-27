@@ -2,6 +2,7 @@ version: '3'
 services:
   worker:
     container_name: worker
+    env_file: .env
     build:
       context: .
       dockerfile: build/Dockerfile
