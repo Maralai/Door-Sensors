@@ -1,0 +1,69 @@
+[
+    {
+        "door_name": "Basement Door",
+        "door_logic_pin": 7,
+        "mqtt_topic": "home/doors/basement",
+        "ha_discovery_topic": "homeassistant/binary_sensor/basement_door/config",
+        "ha_discovery_payload": {
+            "name": "Basement Door",
+            "state_topic": "kilbourn/doors/basement",
+            "payload_on": "OPEN",
+            "payload_off": "CLOSE",
+            "device_class": "door",
+            "unique_id" : "kilbourn_basement_door",
+            "device": {
+                "identifiers": ["kilbourn"],
+                "name": "Kilbourn Security",
+                "sw_version": "1.0.0",
+                "manufacturer": "n/a",
+                "model": "DOOR2023",
+                "via_device": ""
+            }
+        }
+    },
+    {
+        "door_name": "Front Door",
+        "door_logic_pin": 11,
+        "mqtt_topic": "home/doors/front",
+        "ha_discovery_topic": "homeassistant/binary_sensor/front_door/config",
+        "ha_discovery_payload": {
+            "name": "Front Door",
+            "state_topic": "kilbourn/doors/front",
+            "payload_on": "OPEN",
+            "payload_off": "CLOSE",
+            "device_class": "door",
+            "unique_id" : "kilbourn_front_door",
+            "device": {
+                "identifiers": ["kilbourn"],
+                "name": "Kilbourn Security",
+                "sw_version": "1.0.0",
+                "manufacturer": "n/a",
+                "model": "DOOR2023",
+                "via_device": ""
+            }
+
+        }
+    },
+    {
+        "door_name": "Back Door",
+        "door_logic_pin": 15,
+        "mqtt_topic": "home/doors/back",
+        "ha_discovery_topic": "homeassistant/binary_sensor/back_door/config",
+        "ha_discovery_payload": {
+            "name": "Back Door",
+            "state_topic": "kilbourn/doors/back",
+            "payload_on": "OPEN",
+            "payload_off": "CLOSE",
+            "device_class": "door",
+            "unique_id" : "kilbourn_back_door",
+            "device": {
+                "identifiers": ["kilbourn"],
+                "name": "Kilbourn Security",
+                "sw_version": "1.0.0",
+                "manufacturer": "n/a",
+                "model": "DOOR2023",
+                "via_device": ""
+            }
+        }
+    }
+]

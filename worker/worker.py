@@ -3,10 +3,15 @@ import paho.mqtt.client as mqtt
 import json
 from door_sensor import DoorSensor
 import Jetson.GPIO as GPIO
-
 import logging
+
+# Set logging level
 logging.basicConfig(format='%(levelname)s:%(asctime)s %(message)s', level=logging.DEBUG)
 
+# Initialize MQTT client
+mqtt_client = mqtt.Client()
+
+# Define callback function for MQTT client
 def on_message(client, userdata, message):
     payload = message.payload.decode("utf-8")
     topic = message.topic
@@ -16,13 +21,6 @@ def on_message(client, userdata, message):
         for door_sensor in door_sensors:
             door_sensor.publish_state()
 
-logging.info("Loading Door Configuration")
-# Load doors configuration from doors.json
-with open("../data/doors.json", "r") as jsonfile:
-    door_configs = json.load(jsonfile)
-
-# Initialize MQTT client
-mqtt_client = mqtt.Client()
 mqtt_client.on_message = on_message  # Set the callback function
 
 # Retrieve username and password from environment variables
@@ -34,6 +32,11 @@ mqtt_client.username_pw_set(mqtt_username, mqtt_password)
 
 mqtt_client.connect("mqtt", 1883, 60)  # Assuming the MQTT server is running on 'mqtt' (from your docker-compose)
 mqtt_client.subscribe("homeassistant/status")  # Subscribe to the topic
+
+# Load door configuration from doors.json
+logging.info("Loading Door Configuration")
+with open("./config/ha_topics.json", "r") as jsonfile:
+    door_configs = json.load(jsonfile)
 
 # Initialize door sensors and register them to Home Assistant
 logging.info("Initializing Door Sensors")

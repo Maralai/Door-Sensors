@@ -8,7 +8,6 @@ services:
       dockerfile: build/Dockerfile
     privileged: true
     volumes:
-      - ./data:/app/data
       - ./worker:/app/worker
     restart: always
 

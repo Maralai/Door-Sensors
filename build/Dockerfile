@@ -11,7 +11,6 @@ RUN apt-get update && \
 COPY build/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-
 WORKDIR /app/worker
 # Command to run the worker
 CMD ["python", "worker.py"]
