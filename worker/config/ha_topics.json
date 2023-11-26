@@ -2,7 +2,7 @@
     {
         "door_name": "Basement Door",
         "door_logic_pin": 7,
-        "mqtt_topic": "home/doors/basement",
+        "mqtt_topic": "kilbourn/doors/basement",
         "ha_discovery_topic": "homeassistant/binary_sensor/basement_door/config",
         "ha_discovery_payload": {
             "name": "Basement Door",
@@ -13,10 +13,10 @@
             "unique_id" : "kilbourn_basement_door",
             "device": {
                 "identifiers": ["kilbourn"],
-                "name": "Kilbourn Security",
+                "name": "Kilbourn",
                 "sw_version": "1.0.0",
                 "manufacturer": "n/a",
-                "model": "DOOR2023",
+                "model": "Jetson Security",
                 "via_device": ""
             }
         }
@@ -24,7 +24,7 @@
     {
         "door_name": "Front Door",
         "door_logic_pin": 11,
-        "mqtt_topic": "home/doors/front",
+        "mqtt_topic": "kilbourn/doors/front",
         "ha_discovery_topic": "homeassistant/binary_sensor/front_door/config",
         "ha_discovery_payload": {
             "name": "Front Door",
@@ -35,10 +35,10 @@
             "unique_id" : "kilbourn_front_door",
             "device": {
                 "identifiers": ["kilbourn"],
-                "name": "Kilbourn Security",
+                "name": "Kilbourn",
                 "sw_version": "1.0.0",
                 "manufacturer": "n/a",
-                "model": "DOOR2023",
+                "model": "Jetson Security",
                 "via_device": ""
             }
 
@@ -47,7 +47,7 @@
     {
         "door_name": "Back Door",
         "door_logic_pin": 15,
-        "mqtt_topic": "home/doors/back",
+        "mqtt_topic": "kilbourn/doors/back",
         "ha_discovery_topic": "homeassistant/binary_sensor/back_door/config",
         "ha_discovery_payload": {
             "name": "Back Door",
@@ -58,10 +58,10 @@
             "unique_id" : "kilbourn_back_door",
             "device": {
                 "identifiers": ["kilbourn"],
-                "name": "Kilbourn Security",
+                "name": "Kilbourn",
                 "sw_version": "1.0.0",
                 "manufacturer": "n/a",
-                "model": "DOOR2023",
+                "model": "Jetson Security",
                 "via_device": ""
             }
         }
