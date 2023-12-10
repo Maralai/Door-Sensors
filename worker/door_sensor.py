@@ -25,8 +25,13 @@ class DoorSensor:
         # Register to Home Assistant on initialization
         self.register_to_ha()
 
+        # Publish the initial state
+        self.publish_state()
+
     def publish_state(self):
-        """Publish the current state of the door sensor to the MQTT topic."""
+        """Publish the current state of the door sensor to the MQTT topic."""        
+        time.sleep(.02)
+
         # Get the current state
         current_position = GPIO.input(self.pin)
         
@@ -71,4 +76,3 @@ class DoorSensor:
         discovery_topic = self.config["ha_discovery_topic"]
         discovery_payload = json.dumps(self.config["ha_discovery_payload"])
         self.client.publish(discovery_topic, discovery_payload, retain=True)
-        self.client.publish(self.mqtt_topic, "OPEN" if self.position == 1 else "CLOSE")

@@ -9,7 +9,7 @@ import logging
 logging.basicConfig(format='%(levelname)s:%(asctime)s %(message)s', level=logging.DEBUG)
 
 # Initialize MQTT client
-mqtt_client = mqtt.Client()
+mqtt_client = mqtt.Client(client_id=f"mosquitto-worker-{os.environ['DEVICE_ID']}")
 
 # Define callback function for MQTT client
 def on_message(client, userdata, message):
@@ -24,13 +24,14 @@ def on_message(client, userdata, message):
 mqtt_client.on_message = on_message  # Set the callback function
 
 # Retrieve username and password from environment variables
+mqtt_server = os.environ['MQTT_SERVER']
 mqtt_username = os.environ['MQTT_USERNAME']
 mqtt_password = os.environ['MQTT_PASSWORD']
 
 # Set the username and password for the MQTT client
 mqtt_client.username_pw_set(mqtt_username, mqtt_password)
 
-mqtt_client.connect("mqtt", 1883, 60)  # Assuming the MQTT server is running on 'mqtt' (from your docker-compose)
+mqtt_client.connect(mqtt_server, 1883, 60)  # Assuming the MQTT server is running on 'mqtt' (from your docker-compose)
 mqtt_client.subscribe("homeassistant/status")  # Subscribe to the topic
 
 # Load door configuration from doors.json
