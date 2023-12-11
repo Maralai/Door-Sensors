@@ -1,8 +1,5 @@
 # Project specific
-/data/
-
-
-*/config/ha_topics.json
+/worker/config/ha_topics.json
 
 # ChatGPT related metadata (SummarizeGPT)
 *ChatGPT*

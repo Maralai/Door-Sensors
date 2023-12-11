@@ -1,7 +1,7 @@
 version: '3'
 services:
-  worker:
-    container_name: worker
+  door_sensors:
+    container_name: door_sensors
     env_file: .env
     build:
       context: .

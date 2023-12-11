@@ -1,56 +1,46 @@
-import os
-import paho.mqtt.client as mqtt
-import json
-from door_sensor import DoorSensor
-import Jetson.GPIO as GPIO
 import logging
+from device_manager import DeviceManager
 
-# Set logging level
-logging.basicConfig(format='%(levelname)s:%(asctime)s %(message)s', level=logging.DEBUG)
+from core.mqtt_client import MqttClientWrapper
+from core.logging_utils import configure_logging
 
-# Initialize MQTT client
-mqtt_client = mqtt.Client(client_id=f"mosquitto-worker-{os.environ['DEVICE_ID']}")
+configure_logging()
 
-# Define callback function for MQTT client
-def on_message(client, userdata, message):
-    payload = message.payload.decode("utf-8")
-    topic = message.topic
-    logging.info(f"Message received: {payload} on topic {topic}")
-    if topic == "homeassistant/status" and payload == "online":
-        # Home Assistant has restarted, re-publish sensor states here
-        for door_sensor in door_sensors:
-            door_sensor.publish_state()
+class Worker:
+    def __init__(self):
+        self.mqtt = MqttClientWrapper()
+        self.device_manager = DeviceManager(self.mqtt.client)
+        self.setup_mqtt_callbacks()
 
-mqtt_client.on_message = on_message  # Set the callback function
+    def setup_mqtt_callbacks(self):
+        self.mqtt.client.on_message = self.on_message        
+        self.mqtt.client.subscribe("homeassistant/status")
+        # Override other MQTT callbacks here
 
-# Retrieve username and password from environment variables
-mqtt_server = os.environ['MQTT_SERVER']
-mqtt_username = os.environ['MQTT_USERNAME']
-mqtt_password = os.environ['MQTT_PASSWORD']
+    def on_message(self, client, userdata, message):
+        try:
+            payload = message.payload.decode("utf-8")
+            topic = message.topic
+            if topic == "homeassistant/status" and payload == "online":
+                # Home Assistant has restarted, re-publish sensor states here
+                logging.info("Home Assistant is online. Republishing device states.")
+                self.device_manager.publish_states()
+            else:
+                # Forward the message to all devices
+                self.device_manager.on_message(topic, payload)
+        except Exception as error:
+            logging.error(f"Error in on_message: {error}", exc_info=True)
 
-# Set the username and password for the MQTT client
-mqtt_client.username_pw_set(mqtt_username, mqtt_password)
+    def run(self):
+        try:
+            self.mqtt.loop_forever()
+        except KeyboardInterrupt:
+            logging.info("Exiting gracefully")
+        finally:
+            self.device_manager.cleanup()
+            self.mqtt.loop_stop()
+            self.mqtt.disconnect()
 
-mqtt_client.connect(mqtt_server, 1883, 60)  # Assuming the MQTT server is running on 'mqtt' (from your docker-compose)
-mqtt_client.subscribe("homeassistant/status")  # Subscribe to the topic
-
-# Load door configuration from doors.json
-logging.info("Loading Door Configuration")
-with open("./config/ha_topics.json", "r") as jsonfile:
-    door_configs = json.load(jsonfile)
-
-# Initialize door sensors and register them to Home Assistant
-logging.info("Initializing Door Sensors")
-door_sensors = [DoorSensor(door_config, mqtt_client) for door_config in door_configs]
-
-try:
-    # Start the MQTT loop
-    mqtt_client.loop_forever()
-except KeyboardInterrupt:
-    logging.info("Exiting gracefully")
-finally:
-    # Cleanup GPIO pins
-    GPIO.cleanup()
-    # Stop the MQTT loop and disconnect
-    mqtt_client.loop_stop()
-    mqtt_client.disconnect()
+if __name__ == "__main__":
+    worker = Worker()
+    worker.run()

@@ -1,70 +1,108 @@
-# Home Assistant MQTT Door Sensor Integration
+# Door Sensor System
 
-This application facilitates the integration of door sensors with Home Assistant via MQTT using the Mosquitto broker.
+## Overview
 
-## Directory Structure
+The Door Sensor System is a smart solution for monitoring door states (open or closed) in your home or office. This system integrates with Home Assistant through MQTT, providing real-time updates on door status. The system is built using Python and is containerized using Docker, ensuring easy deployment and scalability.
 
+### Features
+- **Real-Time Monitoring**: Tracks the open/close state of doors in real-time.
+- **Home Assistant Integration**: Seamlessly integrates with Home Assistant via MQTT.
+- **Dockerized Application**: Easy to deploy and manage using Docker.
+- **Customizable Configuration**: Allows for easy addition of new sensors.
+
+## Configuration
+
+### Setting up `config/ha_topics.json`
+
+Each door sensor requires an entry in the `config/ha_topics.json` file. Here's a template for adding a new door sensor:
+
+```json
+{
+    "door_name": "Your Door Name",
+    "door_logic_pin": GPIO_pin_number,
+    "mqtt_topic": "your/mqtt/topic",
+    "ha_discovery_topic": "homeassistant/binary_sensor/your_door_name/config",
+    "ha_discovery_payload": {
+        "name": "Your Door Name",
+        "state_topic": "your/mqtt/topic",
+        "payload_on": "OPEN",
+        "payload_off": "CLOSE",
+        "device_class": "door",
+        "unique_id": "your_unique_id",
+        "device": {
+            "identifiers": ["your_identifier"],
+            "name": "Device Name",
+            "sw_version": "Software Version",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "via_device": "Associated Device"
+        }
+    }
+}
 ```
-.
-├── .env                     # Environment variable file
-├── docker-compose.yaml      # Docker Compose file for orchestrating services
-├── README.md                # Documentation file
-├── mosquitto/               # Mosquitto related files and configurations
-│   ├── entrypoint.sh        # Script to setup and start the Mosquitto service
-│   ├── config/              # Configuration files for Mosquitto
-├── build/                   # Build related files
-│   ├── Dockerfile           # Dockerfile for the application
-│   └── requirements.txt     # Python dependencies
-├── worker/                  # Application's main functionality
-│   ├── door_sensor.py       # Door sensor processing module
-│   └── worker.py            # Main worker logic
-└── data/
-    └── doors.json           # JSON file with door sensor configurations
+
+Replace the placeholders (e.g., `Your Door Name`, `GPIO_pin_number`, etc.) with your specific door sensor details.
+
+### Environment Variables
+
+Set the following environment variables in your Docker environment:
+
+```bash
+# Unique identifier for your device
+DEVICE_ID=jn008
+# Logging configuration DEBUG, INFO, WARNING, ERROR, or CRITICAL
+LOG_LEVEL = DEBUG
+# Specify platform as 'jetson' or 'rpi'
+PLATFORM = 'Jetson'
+# Address of the remote MQTT broker
+MQTT_SERVER=your_server_hostname
+# Username for authentication on the remote MQTT broker
+MQTT_USERNAME=your_username
+# Password for authentication on the remote MQTT broker
+MQTT_PASSWORD=your_strong_password
 ```
 
-## Getting Started
+Replace `your_server_hostname`, `your_username`, and `your_strong_password` with your MQTT broker details.
 
-1. **Setup Environment Variables**
+## Deployment
 
-   Ensure you have the required environment variables set in the `.env` file:
+1. Clone the repository and navigate to the project directory.
+2. Update the `config/ha_topics.json` file with your door sensor configurations.
+3. Set the environment variables as per your MQTT broker settings.
+4. Choose one of the following Docker deployment options.
 
-   ```
-   REMOTE_USERNAME=your_mqtt_username
-   REMOTE_PASSWORD=your_mqtt_password
-   REMOTE_SERVER=your_mqtt_server
-   REMOTE_PORT=your_mqtt_port
-   ```
 
-2. **Docker Setup**
+### Docker Deployment - Standalone
 
-   Use Docker Compose to set up and run the services:
+The system can be deployed as a Docker container, and the `docker-compose.yaml` file in the root directory can be used to build and run the container. The `Dockerfile` in the `build` directory is used to build the container image.
 
-   ```bash
-   docker-compose up --build
-   ```
+```bash
+docker-compose up -d --build
+```
 
-   This will set up both the MQTT broker and the worker to process door sensor data.
+### Docker Deployment - As a Plugin
 
-3. **Logging**
+Copy the contents of `docker-compose.override.yaml` file in the same file within the root directory of your Edge Project to extend your plugins into the `docker-compose.yaml` file. This is useful for adding additional services to the container, such as Temperature/Humidity sensors or other devices.
 
-   Check the `mosquitto/log/mosquitto.log` file for logs related to the Mosquitto service.
+```yaml
+version: '3.8'
+services:
+  door_sensors:
+    extends:
+      file: ./plugins/edge_door_sensors/docker-compose.yaml
+      service: door_sensors
+```
 
-## Mosquitto Entrypoint
-
-The `mosquitto/entrypoint.sh` script is used to copy and modify the Mosquitto configuration file based on provided environment variables. Once the config is modified, it then starts the Mosquitto service.
-
-## Data Configuration
-
-The `data/doors.json` file contains configurations for each door sensor, which the worker processes.
-
-## Worker
-
-The `worker/` directory contains the logic for processing door sensor data (`door_sensor.py`) and the main worker logic that interacts with the MQTT broker (`worker.py`).
+```bash
+docker-compose -f docker-compose.yaml -f docker-compose.override.yaml up -d --build
+```
 
 ## Contributing
 
-Feel free to fork this project, submit PRs and report issues. For major changes, please open an issue first.
+Contributions to the Door Sensor System are welcome. Please ensure your code adheres to the principles of Agile Development, follows Python best practices, and includes appropriate tests.
 
-## License
+[LICENSE](./LICENSE)
 
-This project is licensed under Apache License 2.0
+## Acknowledgments
+
+Special thanks to the contributors and the open-source community for making projects like this possible.
